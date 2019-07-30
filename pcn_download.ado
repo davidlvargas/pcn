@@ -58,7 +58,7 @@ split survey_id, p("_")
 
 local i = 1
 local n = 0
-local names survey veralt vermast type
+local names survey vermast veralt type
 
 cap confirm var survey_id`i'
 while _rc == 0 {
@@ -74,8 +74,10 @@ while _rc == 0 {
 	cap confirm var survey_id`i'
 }
 
-order country year survey veralt vermast type survey_id datetime
+order country year survey vermast veralt type survey_id datetime
 
+replace veralt  = substr(veralt, 2, .)
+replace vermast = substr(vermast, 2, .)
 
 qui ds
 local varlist = "`r(varlist)'"
@@ -96,29 +98,35 @@ local n = _N
 
 mata: P  = J(0,0, .z)   // matrix with information about each survey
 
-local n = 1
+local n = 3
 local maindir "P:/01.PovcalNet/01.Vintage_control"
 
 
 local i = 0
 while (`i' < `n') {
 	local ++i
+	local note     ""
+	local dlwnote  ""
 	
+
 	mata: pcn_ind(R)
 	
 	*--------------------2.2: Load data
-	cap datalibweb, country(`country') year(`year') surveyid(`survey_id')  /*
-	*/   type(GMD) mod(GPWG)
+	cap datalibweb, country(`country') year(`year') surveyid(`survey')  /*
+	*/   type(GMD) mod(GPWG) vermast(`vermast') veralt(`veralt') clear
 
 	if (_rc) {
 		local note "dlw error"
+		
+		local dlwnote "datalibweb, country(`country') year(`year') surveyid(`survey') type(GMD) mod(GPWG) vermast(`vermast') veralt(`veralt') clear"
+
 		mata: P = pcn_info(P)
 		continue
 	}
 
 	*------Parameter of the file
 
-	local filename "`r(filename)'"
+	if regexm("`r(filename)'", "(.*)(\.dta)$") local filename = regexs(1)
 
 	local dirname "`maindir'/`country'/`country'_`year'_`survey'"
 	local dirname "`dirname'/`survey_id'/Data"
@@ -128,7 +136,7 @@ while (`i' < `n') {
 	char _dta[pcn_user]           "`user'" 
 
 	* Confirm file exists
-	cap confirm file "`dirname'/`filename'"
+	cap confirm file "`dirname'/`filename'.dta"
 
   if (_rc) {  // if file does not exist
 
@@ -143,7 +151,7 @@ while (`i' < `n') {
 
 		datasignature set, reset saving("`dirname'/`filename'", replace)
 	
-		saveold "`dirname'/`filename'"
+		saveold "`dirname'/`filename'.dta"
 		local note "saved"
 	}
 
@@ -155,10 +163,10 @@ while (`i' < `n') {
 				
 				cap mkdir "`dirname'/_vintage"
 				preserve   // I cannot use  copy because I nees the pcn_datetime char
-					use "`dirname'/`filename'", clear
+					use "`dirname'/`filename'.dta", clear
 					saveold "`dirname'/_vintage/`filename'_`:char _dta[pcn_datetime]'", clear
 				restore
-				saveold "`dirname'/`filename'", replace
+				saveold "`dirname'/`filename'.dta", replace
 				local note "replaced"
 			}
 
@@ -168,7 +176,7 @@ while (`i' < `n') {
 		}
 
 		else {  // if data is the same
-			local note "equal"
+			local note "unchanged"
 		}
 
 	}  //  end of file exists condition
@@ -179,16 +187,8 @@ while (`i' < `n') {
 } // end of while 
 
 
-
-
-*----------2.1:
-
-
-*----------2.2:
-
-
 /*==================================================
-              3: 
+            3: 
 ==================================================*/
 
 
@@ -227,12 +227,14 @@ string matrix pcn_info(matrix P) {
 
 	note = st_local("note")
 
+	dlwnote = st_local("dlwnote")
+
 
 	if (rows(P) == 0) {
-		P = survey, note
+		P = survey, note, dlwnote
 	}
 	else {
-		P = P \ (survey, note)
+		P = P \ (survey, note, dlwnote)
 	}
 	
 	return(P)
@@ -258,3 +260,24 @@ Notes:
 Version Control:
 
 
+
+mata
+	T = ("a", "b")
+	A = asarray_create()
+	
+	for (f=1; f<=cols(T); f++) {
+		
+		asarray(A, T[1,f], st_local(T[1,f]))
+
+	}
+  
+
+  for (loc=asarray_first(A); loc!=NULL; loc=asarray_next(A, loc)) {
+  
+  	asarray_contents(A, loc)
+  
+  }
+	
+	asarray(A, T[1,f])
+
+end
