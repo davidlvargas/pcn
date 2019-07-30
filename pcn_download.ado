@@ -98,7 +98,7 @@ local n = _N
 
 
 mata: P  = J(0,0, .z)   // matrix with information about each survey
-local n = 4
+local n = 5
 
 local i = 0
 while (`i' < `n') {
