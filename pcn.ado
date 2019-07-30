@@ -74,7 +74,10 @@ if ("${pcn_ssccmd}" == "") {
 // ---------------------------------------------------------------------------------
 
 * Directory path
-if ("`drive'" == "") local drive "P"
+if ("`drive'" == "") {
+	if ("`c(hostname)'" == "wbgmsbdat002") local drive "Q"
+	else                                   local drive "P"
+}
 
 if ("`root'" == "") local root "01.PovcalNet/01.Vintage_control"
 
