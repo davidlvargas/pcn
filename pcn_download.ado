@@ -27,12 +27,12 @@ syntax [anything(name=subcmd id="subcommand")],  ///
 
 version 15.1
 
-	local date = date("`c(current_date)'", "DMY")  // %tdDDmonCCYY  
-	local time = clock("`c(current_time)'", "hms") // %tcHH:MM:SS  
-	local date_time = `date'*24*60*60*1000 + `time'  // %tcDDmonCCYY_HH:MM:SS  
-	local datetimeHRF: disp %tcDDmonCCYY_HH:MM:SS `date_time' 
-	local datetimeHRF = trim("`datetimeHRF'")	
-	local user=c(username) 
+local date = date("`c(current_date)'", "DMY")  // %tdDDmonCCYY  
+local time = clock("`c(current_time)'", "hms") // %tcHH:MM:SS  
+local date_time = `date'*24*60*60*1000 + `time'  // %tcDDmonCCYY_HH:MM:SS  
+local datetimeHRF: disp %tcDDmonCCYY_HH:MM:SS `date_time' 
+local datetimeHRF = trim("`datetimeHRF'")	
+local user=c(username) 
 
 
 
@@ -205,9 +205,9 @@ char _dta[pcn_user]           "`user'"
 cap noi datasignature confirm using "`maindir'/_aux/info/pcn_info"
 if (_rc) {
 
+	datasignature set, reset saving("`maindir'/_aux/info/pcn_info", replace)
 	saveold "`maindir'/_aux/info/_vintage/pcn_info_`date_time'.dta"
 	saveold "`maindir'/_aux/info/pcn_info.dta", replace
-	datasignature set, reset saving("`maindir'/_aux/info/pcn_info", replace)
 
 }
 
