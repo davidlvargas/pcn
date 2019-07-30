@@ -78,7 +78,7 @@ if ("`drive'" == "") local drive "P"
 
 if ("`root'" == "") local root "01.PovcalNet/01.Vintage_control"
 
-if ("`maindir'" == "") local maindir "`dirve':/`root'"
+if ("`maindir'" == "") local maindir "`drive':/`root'"
 
 
 // ----------------------------------------------------------------------------------

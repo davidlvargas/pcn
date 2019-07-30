@@ -16,7 +16,7 @@ Output:
               0: Program set up
 ==================================================*/
 program define pcn_download, rclass
-syntax anything(name=subcmd id="subcommand"),  ///
+syntax [anything(name=subcmd id="subcommand")],  ///
 [                                   ///
 			COUNtries(string)                   ///
 			Years(numlist)                      ///
@@ -82,6 +82,7 @@ replace vermast = substr(vermast, 2, .)
 qui ds
 local varlist = "`r(varlist)'"
 
+
 mata: R = st_sdata(.,tokens(st_local("varlist")))
 local n = _N
 
@@ -97,15 +98,12 @@ local n = _N
 
 
 mata: P  = J(0,0, .z)   // matrix with information about each survey
-
-local n = 3
-local maindir "P:/01.PovcalNet/01.Vintage_control"
-
+local n = 4
 
 local i = 0
 while (`i' < `n') {
 	local ++i
-	local note     ""
+	local status     ""
 	local dlwnote  ""
 	
 
@@ -116,7 +114,7 @@ while (`i' < `n') {
 	*/   type(GMD) mod(GPWG) vermast(`vermast') veralt(`veralt') clear
 
 	if (_rc) {
-		local note "dlw error"
+		local status "dlw error"
 		
 		local dlwnote "datalibweb, country(`country') year(`year') surveyid(`survey') type(GMD) mod(GPWG) vermast(`vermast') veralt(`veralt') clear"
 
@@ -152,7 +150,7 @@ while (`i' < `n') {
 		datasignature set, reset saving("`dirname'/`filename'", replace)
 	
 		saveold "`dirname'/`filename'.dta"
-		local note "saved"
+		local status "saved"
 	}
 
 	else {  // If file exists, check data signature
@@ -167,16 +165,16 @@ while (`i' < `n') {
 					saveold "`dirname'/_vintage/`filename'_`:char _dta[pcn_datetime]'", clear
 				restore
 				saveold "`dirname'/`filename'.dta", replace
-				local note "replaced"
+				local status "replaced"
 			}
 
 			else { // if replace option not selected
-				local note "not replaced"
+				local status "not replaced"
 			}
 		}
 
 		else {  // if data is the same
-			local note "unchanged"
+			local status "unchanged"
 		}
 
 	}  //  end of file exists condition
@@ -188,16 +186,30 @@ while (`i' < `n') {
 
 
 /*==================================================
-            3: 
+         3: import results file 
 ==================================================*/
 
-
 *----------3.1:
+drop _all
+
+getmata (surveyid status dlwnote) = P
+
+* Add chars
+char _dta[pcn_datetimeHRF]    "`datetimeHRF'" 
+char _dta[pcn_datetime]       "`date_time'" 
+char _dta[pcn_user]           "`user'" 
 
 
 *----------3.2:
 
+cap noi datasignature confirm using "`maindir'/_aux/info/pcn_info"
+if (_rc) {
 
+	saveold "`maindir'/_aux/info/_vintage/pcn_info_`date_time'.dta"
+	saveold "`maindir'/_aux/info/pcn_info.dta", replace
+	datasignature set, reset saving("`maindir'/_aux/info/pcn_info", replace)
+
+}
 
 
 
@@ -225,16 +237,16 @@ string matrix pcn_info(matrix P) {
 
 	survey = st_local("survey_id")
 
-	note = st_local("note")
+	status = st_local("status")
 
 	dlwnote = st_local("dlwnote")
 
 
 	if (rows(P) == 0) {
-		P = survey, note, dlwnote
+		P = survey, status, dlwnote
 	}
 	else {
-		P = P \ (survey, note, dlwnote)
+		P = P \ (survey, status, dlwnote)
 	}
 	
 	return(P)
