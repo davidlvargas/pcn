@@ -25,6 +25,8 @@ syntax anything(name=subcmd id="subcommand"),  ///
 			type(string)                        ///
 			clear                               ///
 			pause                               ///
+			vermast(string)                     ///
+			veralt(string)                      ///
 			*                                   ///
 ] 
 version 15
@@ -82,6 +84,7 @@ if ("`subcmd'" == "download") {
 
 	pcn_download, countries(`countries') years(`years') /*
 	*/ maindir("`maindir'")  `pause' `clear' `options'
+	return add
 	exit
 }
 
@@ -91,18 +94,36 @@ if ("`subcmd'" == "download") {
 
 if ("`subcmd'" == "load") {
 
-	noi pcn_load, country(`countries') year(`years') /*
-	*/ maindir("`maindir'") type(`type')   `pause' `clear' `options'
+	noi pcn_load, country(`countries') year(`years') type(`type')  /*
+	*/ maindir("`maindir'") vermast(`vermast') veralt(`veralt')  /*
+		*/ `pause' `clear' `options'
+	return add
 	exit
 }
 
 
+// ----------------------------------------------------------------------------------
+//  create text file (collapsed)
+// ----------------------------------------------------------------------------------
 
+if ("`subcmd'" == "create") {
 
+	noi pcn_create, countries(`countries') years(`years') type(`type')  /*
+	*/ maindir("`maindir'") vermast(`vermast') veralt(`veralt')  /*
+		*/ `pause' `clear' `options'
+	return add
+	exit
+}
 
 // ----------------------------------------------------------------------------------
-//  build 
+//  create text file (collapsed)
 // ----------------------------------------------------------------------------------
+
+if ("`subcmd'" == "test") {
+
+	noi pcn_test
+	exit
+}
 
 
 
@@ -110,6 +131,12 @@ if ("`subcmd'" == "load") {
 } // end of qui
 
 end
+
+// ------------------------------------------------------------------------
+// Mata functions
+// ------------------------------------------------------------------------
+
+
 exit
 
 /* End of do-file */

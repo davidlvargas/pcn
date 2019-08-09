@@ -83,7 +83,7 @@ if ("`year'" == "") {
 	local years = trim("`years'")
 	local years: subinstr local years " " ", ", all
 
-	local year = max(`years')
+	local year = max(0, `years')
 
 }
 

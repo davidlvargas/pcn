@@ -45,65 +45,16 @@ local user=c(username)
 /*==================================================
             1: 
 ==================================================*/
+pcn_primus_query, countries(`countries') years(`years') ///
+`pause'
 
-primus query, overalls(approved)
-
-* replace those that finish in GPWG and SARMD or something else. 
-replace survey_id = regexs(1)+"GMD" if regexm(survey_id , "(.*)(GPWG.*)$")
-
-generate datetime = string(date_modified, "%tc")
-
-tostring _all, replace force 
-
-
-*----------1.1: Send to MATA
-
-
-split survey_id, p("_")
-
-local i = 1
-local n = 0
-local names survey vermast veralt type
-
-cap confirm var survey_id`i'
-while _rc == 0 {
-
-	if inlist(`i', 1, 2, 5, 7) {
-		drop survey_id`i'
-	}
-	else {
-		local ++n
-		rename survey_id`i' `: word `n' of `names''
-	}
-	local ++i
-	cap confirm var survey_id`i'
-}
-
-order country year survey vermast veralt type survey_id datetime
-
-replace veralt  = substr(veralt, 2, .)
-replace vermast = substr(vermast, 2, .)
-
-qui ds
 local varlist = "`r(varlist)'"
-
-
-mata: R = st_sdata(.,tokens(st_local("varlist")))
 local n = _N
 
-
-* : list posof "country" in varlist 
-
-
-*----------1.2:
-
 /*==================================================
-              2: 
+        2:  Loop over surveys
 ==================================================*/
-
-
 mata: P  = J(0,0, .z)   // matrix with information about each survey
-
 local i = 0
 while (`i' < `n') {
 	local ++i
