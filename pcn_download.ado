@@ -23,19 +23,24 @@ syntax [anything(name=subcmd id="subcommand")],  ///
 			REGions(string)                     ///
 			maindir(string)                     ///
 			replace                             ///
+			clear                              ///
+			pause                              ///
 ] 
 
-version 15.1
+version 15
 
+*---------- conditions
+if ("`pause'" == "pause") pause on
+else                      pause off
+
+
+* ---- Initial parameters
 local date = date("`c(current_date)'", "DMY")  // %tdDDmonCCYY  
 local time = clock("`c(current_time)'", "hms") // %tcHH:MM:SS  
 local date_time = `date'*24*60*60*1000 + `time'  // %tcDDmonCCYY_HH:MM:SS  
 local datetimeHRF: disp %tcDDmonCCYY_HH:MM:SS `date_time' 
 local datetimeHRF = trim("`datetimeHRF'")	
 local user=c(username) 
-
-
-
 
 /*==================================================
             1: 

@@ -17,31 +17,21 @@ Output:
 ==================================================*/
 program define pcn, rclass
 syntax anything(name=subcmd id="subcommand"),  ///
-[                                   ///
+[                                         ///
 			COUNtries(string)                   ///
 			Years(numlist)                      ///
 			REGions(string)                     ///
-			FILENames(string)                   ///
-			REPOsitory(string)                  ///
-			reporoot(string)                    ///
-			repofromfile                        ///
-			MODule(string)                      ///
-			plines(string)                      ///
-			cpivintage(string)                  ///
-			veralt(string)                      ///
-			vermast(string)                     ///
-			TYPEs(string)                       ///
-			trace(string)                       ///
-			WBOdata(string)                     ///
-			vcdate(string)                      ///
-			createrepo                          ///
-			WELFAREvars(string)                 ///
-			newonly force                       ///
-			noi  gpwg2  pause                   ///
-			load  shape(string)                 ///
-			purge restore keep(string)          ///
+			maindir(string)                     ///
+			type(string)                        ///
+			clear                               ///
+			pause                               ///
+			*                                   ///
 ] 
-version 15.1
+version 15
+
+*---------- conditions
+if ("`pause'" == "pause") pause on
+else                      pause off
 
 
 qui {
@@ -88,10 +78,21 @@ if ("`maindir'" == "") local maindir "`drive':/`root'"
 // Download GPWG
 // ----------------------------------------------------------------------------------
 
-if ("`subcmd'" == "gpwg") {
+if ("`subcmd'" == "download") {
 
 	pcn_download, countries(`countries') years(`years') /*
-	*/ maindir("`maindir'") 
+	*/ maindir("`maindir'")  `pause' `clear' `options'
+	exit
+}
+
+// ----------------------------------------------------------------------------------
+// Load
+// ----------------------------------------------------------------------------------
+
+if ("`subcmd'" == "load") {
+
+	noi pcn_load, country(`countries') year(`years') /*
+	*/ maindir("`maindir'") type(`type')   `pause' `clear' `options'
 	exit
 }
 
