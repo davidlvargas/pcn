@@ -188,6 +188,12 @@ else {
 local survid = "`country'_`year'_`survey'_v`vermast'_M_v`veralt'_A_`collection'"
 local filename = "`survid'_`module'"
 
+return local surdir = "`surdir'"
+return local survid = "`survid'"
+return local survin = "`country'_`year'_`survey'_v`vermast'_M_v`veralt'_A_"
+return local filename = "`filename'"
+
+
 use "`surdir'/`survid'/Data/`filename'.dta", clear
 noi disp as text "`filename'.dta" as res " successfully loaded"
 /*==================================================
