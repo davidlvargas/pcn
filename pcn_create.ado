@@ -131,44 +131,9 @@ end
 /*====================================================================
 Mata functions
 ====================================================================*/
-mata
-mata drop pcn*()
-mata set mataoptimize on
-mata set matafavor speed
 
-void pcn_ind(string matrix R) {
-	i = strtoreal(st_local("i"))
-	vars = tokens(st_local("varlist"))
-	for (j =1; j<=cols(vars); j++) {
-		//printf("j=%s\n", R[i,j])
-		st_local(vars[j], R[i,j] )
-	} 
-} // end of IDs variables
-
-string matrix pcn_info(matrix P) {
-
-	survey = st_local("survey_id")
-
-	status = st_local("status")
-
-	dlwnote = st_local("dlwnote")
-
-
-	if (rows(P) == 0) {
-		P = survey, status, dlwnote
-	}
-	else {
-		P = P \ (survey, status, dlwnote)
-	}
-	
-	return(P)
-}
-
-
-end
-
-
-
+findfile "pcn_functions.mata"
+include "`r(fn)'"
 
 
 exit
