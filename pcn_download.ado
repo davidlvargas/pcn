@@ -51,6 +51,12 @@ pcn_primus_query, countries(`countries') years(`years') ///
 local varlist = "`r(varlist)'"
 local n = _N
 
+if (`n' == 0) {
+	noi disp as error "There is no data in PRIMUS for the convination of " ///
+	"country/years selected"
+	error
+}
+
 /*==================================================
         2:  Loop over surveys
 ==================================================*/
