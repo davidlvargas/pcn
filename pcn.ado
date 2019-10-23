@@ -115,6 +115,22 @@ if ("`subcmd'" == "create") {
 	exit
 }
 
+
+//========================================================
+// Group data
+//========================================================
+
+if inlist(lower("`subcmd'"), "group", "groupdata", "gd", "groupd") {
+	
+	noi pcn_groupdata, countries(`countries') years(`years') type(`type')  /*
+	*/  vermast(`vermast') veralt(`veralt')  /*
+	*/ `pause' `clear' `options'
+	return add
+	exit
+}
+
+
+
 // ----------------------------------------------------------------------------------
 //  create text file (collapsed)
 // ----------------------------------------------------------------------------------
