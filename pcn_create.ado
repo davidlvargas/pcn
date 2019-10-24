@@ -130,7 +130,7 @@ while (`i' < `n') {
 	order weight welfare
 	
 	//------------Uncollapsed data
-	saveold "`surdir'/`survin'PCN/Data/`survin'.dta", `replace'
+	save "`surdir'/`survin'PCN/Data/`survin'.dta", `replace'
 	
 	export delimited using "`surdir'/`survin'PCN/Data/`country'`year'.txt", ///
 	novarnames nolabel delimiter(tab) `replace'
@@ -139,7 +139,7 @@ while (`i' < `n') {
 	//------------ collapse data
 	collapse (sum) weight, by(welfare)
 	
-	saveold "`surdir'/`survin'PCN/Data/`survin'collapsed.dta", `replace'
+	save "`surdir'/`survin'PCN/Data/`survin'collapsed.dta", `replace'
 	
 	export delimited using "`surdir'/`survin'PCN/Data/`country'`year'_collapsed.txt", ///
 	novarnames nolabel delimiter(tab) `replace'
