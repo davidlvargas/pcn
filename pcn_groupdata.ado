@@ -403,12 +403,11 @@ if (_rc) {
 	
 	//------------Modify Master file with new sheet
 	
-	export excel "p:\01.PovcalNet\00.Master\02.vintage\Master_`masttime'.xlsx", /* 
-	*/ sheet(SurveyMean, modify) firstrow(variables)
-	
 	export excel "p:\01.PovcalNet\00.Master\01.current\Master.xlsx", /* 
 	*/ sheet(SurveyMean, modify) firstrow(variables)
 	
+	copy "p:\01.PovcalNet\00.Master\01.current\Master.xlsx"   /* 
+	 */ "p:\01.PovcalNet\00.Master\02.vintage\Master_`masttime'.xlsx"
 	
 }
 else {
