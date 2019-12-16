@@ -34,7 +34,7 @@ syntax [anything(name=subcmd id="subcommand")],  ///
 
 version 15
 
-*---------- conditions
+*---------- pause
 if ("`pause'" == "pause") pause on
 else                      pause off
 
@@ -49,9 +49,36 @@ local datetimeHRF = trim("`datetimeHRF'")
 local user=c(username) 
 
 
+//========================================================
+// conditions
+//========================================================
+
 * ----- Initial conditions
 
 local country = upper("`country'")
+
+
+*---------- conditions
+if ("`type'" == "") local type "GMD"
+
+if (inlist("`type'", "GMD", "GPWG")) {
+	local collection "GMD"
+	local module "GPWG"
+}
+else if (inlist("`type'", "txt", "text", "pcn")) {
+	local collection "PCN"
+}
+else if (upper("`type'") == "LIS") {
+	local collection "LIS"
+	local module ""
+	local maindir "p:\01.PovcalNet\04.LIS\02.data"
+}
+else {
+	noi disp as error "type: `type' is not valid"
+	error
+}
+
+
 
 /*==================================================
               1: Find path
@@ -69,7 +96,7 @@ local survey "ENIGH"
 mata: st_local("direxists", strofreal(direxists("`maindir'/`country'")))
 
 if (`direxists' != 1) { // if folder does not exist
-	noi disp as err "`country' not found"
+	noi disp as err "`country' (`type') not found"
 	error
 }
 
@@ -122,7 +149,7 @@ local surdir "`maindir'/`country'/`country'_`year'_`survey'"
 * vermast
 
 if ("`vermast'" == "") {
-	local dirs: dir "`surdir'" dirs "*GMD", respectcase
+	local dirs: dir "`surdir'" dirs "*`type'", respectcase
 
 	if (`"`dirs'"' == "") {
 		noi disp as err "no GMD collection for the following combination: " ///
@@ -149,7 +176,7 @@ else {
 }
 
 if ("`veralt'" == "") {
-	local dirs: dir "`surdir'" dirs "*`vermast'_M_*_A_GMD", respectcase
+	local dirs: dir "`surdir'" dirs "*`vermast'_M_*_A_`collection'", respectcase
 	foreach dir of local dirs {
 		if regexm(`"`dir'"', "_[Vv]([0-9]+)_[Aa]_") local a = regexs(1)
 		local vas = "`vas' `a'"
@@ -168,25 +195,16 @@ if ("`veralt'" == "") {
        2: Loading according to type
 ==================================================*/
 
-*----------2.1: conditions
-if ("`type'" == "") local type "GMD"
-
-if (inlist("`type'", "GMD", "GPWG")) {
-	local collection "GMD"
-	local module "GPWG"
-}
-else if (inlist("`type'", "txt", "text", "pcn")) {
-	local collection "PCN"
-}
-else {
-	noi disp as error "type: `type' is not valid"
-	error
-}
-
 
 *----------2.2: Load data
 local survid = "`country'_`year'_`survey'_v`vermast'_M_v`veralt'_A_`collection'"
-local filename = "`survid'_`module'"
+
+if ("`module'" != "") {
+	local filename = "`survid'_`module'"
+} 
+else {
+	local filename = "`survid'"
+}
 
 return local surdir = "`surdir'"
 return local survid = "`survid'"
