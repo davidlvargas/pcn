@@ -32,7 +32,7 @@ syntax [anything(name=subcmd id="subcommand")],  ///
 			pause                         ///
 ] 
 
-version 15
+version 14
 
 *---------- conditions
 if ("`pause'" == "pause") pause on
